@@ -11,11 +11,6 @@ Allows the TR-2L and S2 wheels to alternate between pivot(normal) and differenti
 Battery Drainer automatically reduces the ec within batteries to a reduced and configurable percentage of their capacity upon launch. Like a brand new Phone!
 
 -------------------------------------------------------
-### Internal Combustion
-
-Combustion adds a mode to fuel cells that lets them use intake air in place of oxidiser. Perfect for smaller propeller aircraft! This mod also includes the codebase for convertors which cannot be disabled, used in [KP Dynamics](https://github.com/Spartwo/KP-Dynamics) to power the simple nuclear reactors.
-
--------------------------------------------------------
 ### Radiator Tracking Toggle
 
 Allows users to enable or disable the movement of deployable radiators with relation to the sun while preserving their core functionality.
