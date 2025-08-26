@@ -8,7 +8,7 @@ Allows the TR-2L and S2 wheels to alternate between pivot(normal) and differenti
 -------------------------------------------------------
 ### Battery Drainer
 
-Battery Drainer automatically reduces the ec within batteries to a reduced and configurable percentage of their capacity upon launch. Like a brand new Phone!
+Battery Drainer automatically reduces the ec within batteries to a reduced and configurable percentage of their capacity upon load. Like a brand new Phone!
 
 -------------------------------------------------------
 ### Radiator Tracking Toggle
