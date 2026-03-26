@@ -15,9 +15,17 @@ namespace EndCapper
         public string showAttached;      // "TopCap1;TopCap2,BottomCap1;BottomCap2"  
 
         [KSPField]
-        public string showFree;          // "TopFree1;TopFree2,BottomFree1"  
+        public string showFree;          // "TopFree1;TopFree2,BottomFree1"
 
-        // Formatted fields
+        [KSPEvent(guiActive = true,
+                   guiActiveEditor = true,
+                   guiName = "#LOC_KPDynamics_Capping")]
+        public void EventToggleTracking() => ToggleCapping();
+
+        [KSPField(isPersistant = true)]
+        public bool cappingEnabled = true;
+
+        // Internally handle as a nodeData object //TODO: Config structure change to defined nodes
         private class NodeData
         {
             public AttachNode node;
@@ -36,8 +44,6 @@ namespace EndCapper
         {
             base.OnStart(state);
 
-            Debug.Log($"[ModuleEndCap] START");
-
             if (HighLogic.LoadedSceneIsEditor)
             {
                 GameEvents.onEditorPartEvent.Add(OnEditorEvent);
@@ -45,7 +51,10 @@ namespace EndCapper
 
             CacheInitialChildren();
             ParseConfig();
-            UpdateVisuals();
+            UpdateVisuals(); 
+            
+            //Set starting value
+            Events["EventToggleTracking"].guiName = cappingEnabled ? "#LOC_KPDynamics_DisableCapping" : "#LOC_KPDynamics_EnableCapping";
         }
 
         public void OnDestroy()
@@ -104,16 +113,10 @@ namespace EndCapper
 
                 nodes.Add(nodeData);
             }
-
-            Debug.Log($"[ModuleEndCap] Parsed {nodes.Count} nodes for {part.name}");
-
         }
 
         private void UpdateVisuals()
         {
-
-            Debug.Log($"[ModuleEndCap] Updating visuals for {part.name} with {nodes.Count} nodes");
-
             foreach (var nodeData in nodes)
             {
                 if (nodeData.node == null)
@@ -122,33 +125,48 @@ namespace EndCapper
                     continue;
                 }
 
-                bool attached = nodeData.node.attachedPart != null;
-                Debug.Log($"[ModuleEndCap] Node '{nodeData.node.id}' attached? {attached}");
+                bool cappingActive = cappingEnabled && nodeData.node.attachedPart != null;
+                //Debug.Log($"[ModuleEndCap] Node '{nodeData.node.id}' attached? {attached}");
 
-                // Show attached transforms
-                foreach (var t in nodeData.showWhenAttached)
-                {
-                    if (t == null)
-                    {
-                        Debug.LogWarning($"[ModuleEndCap] showWhenAttached transform null for node '{nodeData.node.id}'");
-                        continue;
-                    }
-                    t.gameObject.SetActive(attached);
-                    Debug.Log($"[ModuleEndCap] Setting attached transform '{t.name}' active={attached}");
-                }
-
-                // Show free transforms
-                foreach (var t in nodeData.showWhenFree)
-                {
-                    if (t == null)
-                    {
-                        Debug.LogWarning($"[ModuleEndCap] showWhenFree transform null for node '{nodeData.node.id}'");
-                        continue;
-                    }
-                    t.gameObject.SetActive(!attached);
-                    Debug.Log($"[ModuleEndCap] Setting free transform '{t.name}' active={!attached}");
-                }
+                // Show model transforms
+                SetAttachedTransforms(!cappingActive, nodeData);
+                SetFreeTransforms(cappingActive, nodeData);
             }
+        }
+
+        private void SetFreeTransforms(bool s, NodeData n)
+        {
+            // Show attached transforms
+            foreach (var t in n.showWhenAttached)
+            {
+                if (t == null)
+                {
+                    Debug.LogWarning($"[ModuleEndCap] showWhenAttached transform null for node '{n.node.id}'");
+                    continue;
+                }
+                t.gameObject.SetActive(s);
+            }
+        }
+
+        private void SetAttachedTransforms(bool s, NodeData n)
+        {
+            // Show free transforms
+            foreach (var t in n.showWhenFree)
+            {
+                if (t == null)
+                {
+                    Debug.LogWarning($"[ModuleEndCap] showWhenFree transform null for node '{n.node.id}'");
+                    continue;
+                }
+                t.gameObject.SetActive(s);
+            }
+        }
+
+        private void ToggleCapping()
+        {
+            cappingEnabled = !cappingEnabled; 
+            Events["EventToggleTracking"].guiName = cappingEnabled ? "#LOC_KPDynamics_DisableCapping" : "#LOC_KPDynamics_EnableCapping";
+            UpdateVisuals();
         }
 
         private HashSet<Part> directChildren = new HashSet<Part>();
@@ -175,7 +193,6 @@ namespace EndCapper
                     if (isDirectChildNow)
                     {
                         directChildren.Add(p);
-                        Debug.Log($"[ModuleEndCap] Part '{p.name}' attached to '{part.name}'");
                         UpdateVisuals();
                     }
                     break;
@@ -184,16 +201,15 @@ namespace EndCapper
                     if (wasDirectChild)
                     {
                         directChildren.Remove(p);
-                        Debug.Log($"[ModuleEndCap] Part '{p.name}' detached from '{part.name}'");
                         UpdateVisuals();
                     }
                     break;
             }
         }
 
-        // Populate children at start to track later
         private void CacheInitialChildren()
         {
+            // Populate children at start to track later
             directChildren.Clear();
             foreach (var child in part.children)
             {

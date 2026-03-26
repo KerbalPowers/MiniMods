@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.8.34511.84
+VisualStudioVersion = 17.13.35931.197 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleTracking", "ToggleTracking.csproj", "{C26ECADC-96F5-41A6-9044-6D2701129842}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndCapper", "EndCapper.csproj", "{C26ECADC-96F5-41A6-9044-6D2701129842}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +20,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {14E58D6B-9D61-42FC-9CDD-D0B934CAD311}
+		SolutionGuid = {76EFD3BA-C6C8-43C4-AB13-1E63491E2B90}
 	EndGlobalSection
 EndGlobal
